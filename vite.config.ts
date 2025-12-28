@@ -6,4 +6,9 @@ import tailwindcss from '@tailwindcss/vite'
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [svelte(), tailwindcss()],
+  base: './', // Ensures relative paths for assets on GitHub Pages
+  build: {
+    outDir: 'docs', // Better for GitHub Pages hosting
+    emptyOutDir: true,
+  }
 })
