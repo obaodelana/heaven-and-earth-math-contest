@@ -1,47 +1,55 @@
-# Svelte + TS + Vite
+# Heaven & Earth Math Contest 🧮
 
-This template should help get you started developing with Svelte and TypeScript in Vite.
+Hello Sean! This is a simple scoreboard app built for the "Heaven & Earth Math Contest". It's designed to be used by the game master to keep track of team scores, streaks, and where they are in the "world."
 
-## Recommended IDE Setup
+## How the Game Works
 
-[VS Code](https://code.visualstudio.com/) + [Svelte](https://marketplace.visualstudio.com/items?itemName=svelte.svelte-vscode).
+The game is split into two places: **Earth** and **Heaven**.
 
-## Need an official Svelte framework?
+1.  **Starting Out**: Everyone starts on **Earth**.
+2.  **Moving Up**: If a team on Earth gets a question right, they don't get points yet—they just move up to **Heaven**!
+3.  **Scoring in Heaven**: Once a team is in Heaven, every correct answer earns them points. 
+    -   A correct answer is worth **3 points**.
+    -   If they get multiple questions right in a row (a "streak"), they get **bonus points** (+1 for every extra correct answer in the streak).
+4.  **Falling Back Down**: If a team gets a question **wrong** (no matter where they are), they are immediately sent back to **Earth**. If they were in Heaven, their streak is also reset to zero.
 
-Check out [SvelteKit](https://github.com/sveltejs/kit#readme), which is also powered by Vite. Deploy anywhere with its serverless-first approach and adapt to various platforms, with out of the box support for TypeScript, SCSS, and Less, and easily-added support for mdsvex, GraphQL, PostCSS, Tailwind CSS, and more.
+## How to Use the App
 
-## Technical considerations
+1.  **Add Teams**: On the home page, just type in the team names one by one.
+2.  **Start the Game**: Hit "Start Game" to go to the scoreboard.
+3.  **Logging Answers**: 
+    -   Select the team from the dropdown.
+    -   Type in the question number they just did.
+    -   Click **Correct** or **Incorrect**.
+4.  **Buttons at the Top**:
+    -   **Exit Game**: Wipes everything and takes you back to the start.
+    -   **Reset Game**: Keeps the teams but clears all scores and progress.
+    -   **Fullscreen**: Makes the board big for everyone to see.
 
-**Why use this over SvelteKit?**
+## Where Everything Lives
 
-- It brings its own routing solution which might not be preferable for some users.
-- It is first and foremost a framework that just happens to use Vite under the hood, not a Vite app.
+If you want to poke around the code, here’s where I put everything:
 
-This template contains as little as possible to get started with Vite + TypeScript + Svelte, while taking into account the developer experience with regards to HMR and intellisense. It demonstrates capabilities on par with the other `create-vite` templates and is a good starting point for beginners dipping their toes into a Vite + Svelte project.
+-   **`src/lib/home`**: This is the "Lobby." It contains the code for adding teams and the first page you see.
+-   **`src/lib/scoreboard`**: The "Main Stage." This is where the actual contest scoreboard and the buttons for the Game Master live.
+    -   **`gameState.svelte.ts`**: The "Rulebook." This is the most important file. It’s where the app decides how many points to give and how teams move between Heaven and Earth.
+-   **`src/lib/constants.ts`**: The "Settings." This is a tiny file where you can change the point values (like making a correct answer worth 10 points instead of 3).
 
-Should you later need the extended capabilities and extensibility provided by SvelteKit, the template has been structured similarly to SvelteKit so that it is easy to migrate.
+## Making Quick Edits
 
-**Why `global.d.ts` instead of `compilerOptions.types` inside `jsconfig.json` or `tsconfig.json`?**
+-   **Change the points**: Open `src/lib/constants.ts` and change `POINTS_FIRST_CORRECT` or `POINTS_PER_STREAK`.
+-   **Change the words "Heaven" and "Earth"**: Open `src/lib/constants.ts` and edit the `location` types, then do a "Find and Replace" (Cmd+F) in the whole project to update the labels.
+-   **Change colors**: Most colors come from "Tailwind CSS." Look for things like `bg-emerald-500` (green) or `bg-indigo-600` (purple) in the files and swap them for other colors (like `bg-red-500` or `bg-blue-600`).
 
-Setting `compilerOptions.types` shuts out all other types not explicitly listed in the configuration. Using triple-slash references keeps the default TypeScript setting of accepting type information from the entire workspace, while also adding `svelte` and `vite/client` type information.
+## Technical Stuff
 
-**Why include `.vscode/extensions.json`?**
+If you want to run the code on your personal computer and makes changes:
 
-Other templates indirectly recommend extensions via the README, but this file allows VS Code to prompt the user to install the recommended extension upon opening the project.
+1.  **Install Node.js**: Go to [nodejs.org](https://nodejs.org/) and download the "LTS" version. This is the engine that runs the code.
+2. Download the code to your computer.
+2.  **Install required packages**: Open your terminal in the downloaded folder and run `npm install`.
+3.  **Run it with**: Run `npm run dev` and click the link it gives you (usually `localhost:5173`).
 
-**Why enable `allowJs` in the TS template?**
+---
 
-While `allowJs: false` would indeed prevent the use of `.js` files in the project, it does not prevent the use of JavaScript syntax in `.svelte` files. In addition, it would force `checkJs: false`, bringing the worst of both worlds: not being able to guarantee the entire codebase is TypeScript, and also having worse typechecking for the existing JavaScript. In addition, there are valid use cases in which a mixed codebase may be relevant.
-
-**Why is HMR not preserving my local component state?**
-
-HMR state preservation comes with a number of gotchas! It has been disabled by default in both `svelte-hmr` and `@sveltejs/vite-plugin-svelte` due to its often surprising behavior. You can read the details [here](https://github.com/rixo/svelte-hmr#svelte-hmr).
-
-If you have state that's important to retain within a component, consider creating an external store which would not be replaced by HMR.
-
-```ts
-// store.ts
-// An extremely simple external store
-import { writable } from 'svelte/store'
-export default writable(0)
-```
+Built with **Svelte 5**, **TypeScript**, and **Tailwind CSS**.
