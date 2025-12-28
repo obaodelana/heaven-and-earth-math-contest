@@ -2,6 +2,8 @@
 
 Hello Sean! This is a simple scoreboard app built for the "Heaven & Earth Math Contest". It's designed to be used by the game master to keep track of team scores, streaks, and where they are in the "world."
 
+Play the game here: [https://obaodelana.github.io/heaven-and-earth-math-contest](https://obaodelana.github.io/heaven-and-earth-math-contest)
+
 ## How the Game Works
 
 The game is split into two places: **Earth** and **Heaven**.

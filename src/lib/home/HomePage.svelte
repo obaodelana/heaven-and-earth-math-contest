@@ -75,7 +75,7 @@
 	>
 		<div>
 			<h1 class="text-4xl font-bold text-center text-[#007c41]">
-				Heaven & Earth Challenge
+				Heaven & Earth Contest
 			</h1>
 			<p class="text-center text-slate-400 mt-2">
 				Create your teams to begin the game.
