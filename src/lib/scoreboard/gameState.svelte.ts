@@ -199,7 +199,7 @@ export class GameState {
             )
         ) {
             localStorage.removeItem(LOCAL_STORAGE_KEY);
-            window.location.href = "/";
+            window.location.href = "?";
         }
     }
 }
