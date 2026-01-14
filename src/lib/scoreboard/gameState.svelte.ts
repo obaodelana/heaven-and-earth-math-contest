@@ -16,10 +16,6 @@ export class GameState {
     // Current list of all teams and their stats
     teams = $state<Team[]>([]);
 
-    // Track used question numbers separately for Earth and Heaven
-    usedEarthQuestions = $state<number[]>([]);
-    usedHeavenQuestions = $state<number[]>([]);
-
     // Status message information
     statusMessage = $state("");
     isStatusError = $state(false);
@@ -42,18 +38,20 @@ export class GameState {
 
             // Handle loading and migration from older formats
             let savedTeams: Team[] = [];
-            let savedEarth: number[] = [];
-            let savedHeaven: number[] = [];
 
             if (Array.isArray(parsed)) {
                 // Oldest format: just an array of teams
                 savedTeams = parsed;
             } else if (parsed && typeof parsed === 'object') {
                 savedTeams = parsed.teams || [];
-                // Check for separate lists or common list (migration)
-                savedEarth = parsed.usedEarthQuestions || parsed.usedQuestions || [];
-                savedHeaven = parsed.usedHeavenQuestions || [];
             }
+
+            // Migration: Ensure all teams have the new array properties if missing
+            savedTeams = savedTeams.map(t => ({
+                ...t,
+                usedEarthQuestions: t.usedEarthQuestions || [],
+                usedHeavenQuestions: t.usedHeavenQuestions || []
+            }));
 
             const savedNames = savedTeams
                 .map((t: Team) => t.name)
@@ -63,8 +61,6 @@ export class GameState {
 
             if (savedNames === currentNames) {
                 this.teams = savedTeams;
-                this.usedEarthQuestions = savedEarth;
-                this.usedHeavenQuestions = savedHeaven;
                 return;
             }
         }
@@ -72,7 +68,7 @@ export class GameState {
     }
 
     /**
-     * Resets all teams to their starting state and clears used questions.
+     * Resets all teams to their starting state.
      */
     private resetTeams() {
         this.teams = this.initialTeamNames.map((name) => ({
@@ -80,9 +76,9 @@ export class GameState {
             score: 0,
             location: "Earth",
             streak: 0,
+            usedEarthQuestions: [],
+            usedHeavenQuestions: []
         }));
-        this.usedEarthQuestions = [];
-        this.usedHeavenQuestions = [];
         this.saveState();
     }
 
@@ -91,9 +87,7 @@ export class GameState {
      */
     private saveState() {
         localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify({
-            teams: this.teams,
-            usedEarthQuestions: this.usedEarthQuestions,
-            usedHeavenQuestions: this.usedHeavenQuestions
+            teams: this.teams
         }));
     }
 
@@ -120,24 +114,24 @@ export class GameState {
         const team = this.teams.find((t) => t.name === teamName);
         if (!team) return;
 
-        // Determine which used list to check
-        const usedList = team.location === "Earth" ? this.usedEarthQuestions : this.usedHeavenQuestions;
+        // Determine which used list to check (per team now)
+        const usedList = team.location === "Earth" ? team.usedEarthQuestions : team.usedHeavenQuestions;
 
         if (usedList.includes(questionNumber)) {
-            this.setStatus(`${team.location} Question #${questionNumber} has already been used!`, true);
+            this.setStatus(`${team.name} has already solved ${team.location} Question #${questionNumber}!`, true);
             return;
         }
 
         if (team.location === "Earth") {
             team.location = "Heaven";
             this.setStatus(`${team.name} solved an Earth problem (#${questionNumber}) and moved to Heaven!`);
-            this.usedEarthQuestions.push(questionNumber);
+            team.usedEarthQuestions.push(questionNumber);
         } else {
             const pointsEarned = POINTS_FIRST_CORRECT + team.streak * POINTS_PER_STREAK;
             team.score += pointsEarned;
             team.streak += 1;
             this.setStatus(`${team.name} earned ${pointsEarned} points on Heaven Question #${questionNumber}! Streak: ${team.streak}`);
-            this.usedHeavenQuestions.push(questionNumber);
+            team.usedHeavenQuestions.push(questionNumber);
         }
         this.saveState();
     }
@@ -154,11 +148,11 @@ export class GameState {
         const team = this.teams.find((t) => t.name === teamName);
         if (!team) return;
 
-        // Determine which used list to check
-        const usedList = team.location === "Earth" ? this.usedEarthQuestions : this.usedHeavenQuestions;
+        // Determine which used list to check (per team now)
+        const usedList = team.location === "Earth" ? team.usedEarthQuestions : team.usedHeavenQuestions;
 
         if (usedList.includes(questionNumber)) {
-            this.setStatus(`${team.location} Question #${questionNumber} has already been used!`, true);
+            this.setStatus(`${team.name} has already attempted ${team.location} Question #${questionNumber}!`, true);
             return;
         }
 
@@ -166,9 +160,9 @@ export class GameState {
 
         // Record the used question and update team state
         if (team.location === "Earth") {
-            this.usedEarthQuestions.push(questionNumber);
+            team.usedEarthQuestions.push(questionNumber);
         } else {
-            this.usedHeavenQuestions.push(questionNumber);
+            team.usedHeavenQuestions.push(questionNumber);
             team.streak = 0;
             team.location = "Earth";
         }

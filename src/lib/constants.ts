@@ -12,4 +12,6 @@ export interface Team {
     score: number;
     streak: number;
     location: 'Earth' | 'Heaven';
+    usedEarthQuestions: number[];
+    usedHeavenQuestions: number[];
 }
